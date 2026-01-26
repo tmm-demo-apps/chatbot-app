@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatbot-config
+data:
+  # LLM Configuration - Phase 1: Ollama
+  LLM_BACKEND: "ollama"
+  OLLAMA_URL: "http://ollama:11434"
+  OLLAMA_MODEL: "llama3.2:3b"
+  LLM_TIMEOUT: "60"
+  
+  # Bookstore API
+  BOOKSTORE_API_URL: "http://bookstore-service.bookstore:8080"
+  
+  # Uncomment for Phase 2: VCF Private AI
+  # LLM_BACKEND: "vcf_private_ai"
+  # VCF_MODEL_ENDPOINT: "https://model-runtime.supervisor.vcf.local"
+  # VCF_MODEL_NAME: "llama-3.1-8b"
