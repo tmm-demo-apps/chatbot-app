@@ -42,25 +42,27 @@ def get_llm_client() -> LLMClient:
     """Factory function to get the appropriate LLM client based on configuration.
     
     Environment variables:
-        LLM_BACKEND: Which backend to use ('ollama', 'vcf_private_ai', 'openai')
+        LLM_BACKEND: Which backend to use:
+            - 'openai_compatible' (default): Works with Ollama, VCF Private AI, or any OpenAI-compatible API
+            - 'openai': OpenAI's official API (requires OPENAI_API_KEY)
+            - 'ollama': Legacy, redirects to openai_compatible
+            - 'vcf_private_ai': Legacy, redirects to openai_compatible
         
     Returns:
         An instance of the appropriate LLMClient implementation
     """
-    backend = os.getenv("LLM_BACKEND", "ollama").lower()
+    backend = os.getenv("LLM_BACKEND", "openai_compatible").lower()
     
-    if backend == "ollama":
-        from .ollama import OllamaClient
-        return OllamaClient()
+    # Primary: OpenAI-compatible client (works with Ollama, VCF Private AI, etc.)
+    if backend in ("openai_compatible", "ollama", "vcf_private_ai"):
+        from .openai_compatible import OpenAICompatibleClient
+        return OpenAICompatibleClient()
     
-    elif backend == "vcf_private_ai":
-        from .vcf_private import VCFPrivateAIClient
-        return VCFPrivateAIClient()
-    
+    # OpenAI's official API (different auth handling)
     elif backend == "openai":
         from .openai_client import OpenAIClient
         return OpenAIClient()
     
     else:
         raise ValueError(f"Unknown LLM backend: {backend}. "
-                        f"Supported: ollama, vcf_private_ai, openai")
+                        f"Supported: openai_compatible, openai")

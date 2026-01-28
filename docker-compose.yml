@@ -6,11 +6,12 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - LLM_BACKEND=ollama
-      - OLLAMA_URL=http://ollama:11434
-      - OLLAMA_MODEL=llama3.2:3b
+      - LLM_BACKEND=openai_compatible
+      - LLM_API_URL=http://ollama:11434
+      - LLM_MODEL=smollm2:360m
+      # - LLM_API_KEY=           # Uncomment for VCF Private AI
+      # - LLM_TIMEOUT=30         # Optional override (uses model config if not set)
       - BOOKSTORE_API_URL=http://host.docker.internal:8080
-      - LLM_TIMEOUT=120
     depends_on:
       - ollama
 
@@ -20,8 +21,21 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    environment:
+      # Optimized for CPU inference with smollm2:360m
+      - OLLAMA_NUM_PARALLEL=1          # Single request focus (faster)
+      - OLLAMA_MAX_LOADED_MODELS=1     # Keep model in memory
+      - OLLAMA_KEEP_ALIVE=24h          # Prevent model unloading
+    deploy:
+      resources:
+        limits:
+          cpus: '4'                    # Use up to 4 CPU cores
+          memory: 8G                   # 8GB RAM for model + context
+        reservations:
+          cpus: '2'
+          memory: 4G
     # Pull model after container starts
-    # Run: docker exec -it chatbot-app-ollama-1 ollama pull llama3.2:3b
+    # Run: docker exec -it chatbot-app-ollama-1 ollama pull smollm2:360m
 
 volumes:
   ollama_data:
