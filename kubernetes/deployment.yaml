@@ -14,11 +14,23 @@ spec:
       labels:
         app: chatbot
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: chatbot
         image: harbor.corp.vmbeans.com/bookstore/chatbot:latest
         ports:
         - containerPort: 5000
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: false
         envFrom:
         - configMapRef:
             name: chatbot-config

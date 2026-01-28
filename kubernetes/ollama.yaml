@@ -29,11 +29,23 @@ spec:
       labels:
         app: ollama
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: ollama
         image: ollama/ollama:latest
         ports:
         - containerPort: 11434
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: false
         env:
         # Optimized for CPU inference
         - name: OLLAMA_NUM_PARALLEL
@@ -42,6 +54,10 @@ spec:
           value: "1"
         - name: OLLAMA_KEEP_ALIVE
           value: "24h"
+        - name: HOME
+          value: "/tmp"
+        - name: OLLAMA_MODELS
+          value: "/data/models"
         resources:
           requests:
             memory: "2Gi"
@@ -51,7 +67,9 @@ spec:
             cpu: "2000m"
         volumeMounts:
         - name: ollama-data
-          mountPath: /root/.ollama
+          mountPath: /data
+        - name: tmp
+          mountPath: /tmp
         # Pull smollm2:360m model on startup
         lifecycle:
           postStart:
@@ -73,6 +91,8 @@ spec:
       - name: ollama-data
         persistentVolumeClaim:
           claimName: ollama-pvc
+      - name: tmp
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
