@@ -29,11 +29,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'                    # Use up to 4 CPU cores
-          memory: 8G                   # 8GB RAM for model + context
+          cpus: '2'                    # Match K8s limit (2 cores)
+          memory: 3G                   # Match K8s limit (3Gi)
         reservations:
-          cpus: '2'
-          memory: 4G
+          cpus: '1'                    # Match K8s request (1 core)
+          memory: 2G                   # Match K8s request (2Gi)
     # Pull model after container starts
     # Run: docker exec -it chatbot-app-ollama-1 ollama pull smollm2:360m
 

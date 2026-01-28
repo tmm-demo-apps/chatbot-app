@@ -5,7 +5,7 @@ metadata:
   labels:
     app: chatbot
 spec:
-  replicas: 2
+  replicas: 1  # Single replica - LLM requests are CPU-bound
   selector:
     matchLabels:
       app: chatbot
@@ -16,12 +16,20 @@ spec:
     spec:
       containers:
       - name: chatbot
-        image: chatbot
+        image: harbor.corp.vmbeans.com/bookstore/chatbot:latest
         ports:
         - containerPort: 5000
         envFrom:
         - configMapRef:
             name: chatbot-config
+        env:
+        # Optional: API key for VCF Private AI (Phase 2)
+        - name: LLM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-secrets
+              key: llm-api-key
+              optional: true  # Not required for Ollama
         resources:
           requests:
             memory: "128Mi"
@@ -37,7 +45,7 @@ spec:
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /ready
+            path: /health
             port: 5000
           initialDelaySeconds: 5
           periodSeconds: 5
