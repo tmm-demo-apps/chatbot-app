@@ -1,8 +1,7 @@
 """Chat service orchestrating LLM and canned responses."""
 import logging
-import re
 import uuid
-from typing import Optional, List, Dict, Any
+from typing import Optional
 
 from .llm.client import LLMClient
 from .integrations.bookstore import BookstoreClient

@@ -121,7 +121,7 @@ See `kubernetes/` directory for manifests.
 kubectl apply -k kubernetes/
 
 # Or use ArgoCD
-argocd app create chatbot --repo https://github.com/johnnyr0x/chatbot-app --path kubernetes
+argocd app create chatbot --repo https://github.com/tmm-demo-apps/chatbot-app --path kubernetes
 ```
 
 ## Response Strategy
@@ -141,5 +141,5 @@ argocd app create chatbot --repo https://github.com/johnnyr0x/chatbot-app --path
 
 ## Related Projects
 
-- [bookstore-app](https://github.com/johnnyr0x/bookstore-app) - E-commerce bookstore
-- [reader-app](https://github.com/johnnyr0x/reader-app) - EPUB reader
+- [bookstore-app](https://github.com/tmm-demo-apps/bookstore-app) - E-commerce bookstore
+- [reader-app](https://github.com/tmm-demo-apps/reader-app) - EPUB reader
