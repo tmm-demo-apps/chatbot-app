@@ -13,4 +13,4 @@ resources:
 images:
   - name: chatbot
     newName: harbor.corp.vmbeans.com/bookstore/chatbot
-    newTag: latest
+    newTag: v20260128-52cf60c
