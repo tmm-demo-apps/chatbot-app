@@ -34,3 +34,4 @@ ollama_data/
 
 # Personal dev notes
 dev_docs/
+kubernetes/vcf-secrets/
