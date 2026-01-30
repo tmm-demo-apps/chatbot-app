@@ -20,7 +20,7 @@ metadata:
   labels:
     app: ollama
 spec:
-  replicas: 1
+  replicas: 0  # Disabled until VKS node disk size is increased
   selector:
     matchLabels:
       app: ollama
