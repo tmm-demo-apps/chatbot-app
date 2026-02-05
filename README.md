@@ -1,6 +1,14 @@
 # Chatbot App
 
+[![CI](https://github.com/tmm-demo-apps/chatbot-app/workflows/CI/badge.svg)](https://github.com/tmm-demo-apps/chatbot-app/actions)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python)](https://python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+
 AI-powered customer support chatbot for the Bookstore. Part of the VCF multi-app demo suite.
+
+**Live Endpoint**: http://chatbot.corp.vmbeans.com
+
+> **Note**: Ollama is currently disabled in K8s (the 3.3GB image exceeds VKS node ephemeral storage). The chatbot works with canned responses. LLM functionality will be enabled via dedicated Ollama VM.
 
 ## Features
 
@@ -49,21 +57,20 @@ The chatbot uses a pluggable LLM architecture for easy migration:
 
 ### Configuration
 
+The chatbot uses a unified OpenAI-compatible client that works with multiple backends:
+
 ```bash
-# Ollama (default)
-LLM_BACKEND=ollama
-OLLAMA_URL=http://ollama:11434
-OLLAMA_MODEL=llama3.2:3b
+# Generic LLM settings (works with Ollama, VCF Private AI, or any OpenAI-compatible API)
+LLM_BACKEND=openai_compatible
+LLM_API_URL=http://ollama:11434       # Ollama in-cluster
+# LLM_API_URL=http://ollama-vm:11434  # External Ollama VM
+LLM_MODEL=smollm2:360m                # Fast, CPU-optimized model
+LLM_API_KEY=                          # Optional, for authenticated endpoints
 
-# VCF Private AI
-LLM_BACKEND=vcf_private_ai
-VCF_MODEL_ENDPOINT=https://model-runtime.vcf.local
-VCF_MODEL_NAME=llama-3.1-8b
-
-# OpenAI (fallback)
-LLM_BACKEND=openai
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-3.5-turbo
+# VCF Private AI (when available)
+LLM_API_URL=https://model-runtime.vcf.local
+LLM_MODEL=llama-3.1-8b
+LLM_API_KEY=your-vcf-api-key
 ```
 
 ## Local Development
@@ -102,27 +109,38 @@ curl http://localhost:5000/ready
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| LLM_BACKEND | LLM backend to use | ollama |
-| OLLAMA_URL | Ollama service URL | http://ollama:11434 |
-| OLLAMA_MODEL | Ollama model name | llama3.2:3b |
-| VCF_MODEL_ENDPOINT | VCF Private AI endpoint | - |
-| VCF_MODEL_NAME | VCF model name | llama-3.1-8b |
-| OPENAI_API_KEY | OpenAI API key | - |
-| OPENAI_MODEL | OpenAI model | gpt-3.5-turbo |
+| LLM_BACKEND | LLM backend type | openai_compatible |
+| LLM_API_URL | LLM API endpoint | http://ollama:11434 |
+| LLM_MODEL | Model name | smollm2:360m |
+| LLM_API_KEY | API key (if required) | - |
+| LLM_TIMEOUT | LLM request timeout (seconds) | 30 |
 | BOOKSTORE_API_URL | Bookstore API URL | http://bookstore-service.bookstore:8080 |
-| LLM_TIMEOUT | LLM request timeout | 30 |
 
 ## Kubernetes Deployment
 
-See `kubernetes/` directory for manifests.
+The Chatbot app is deployed to VKS-04 via ArgoCD as part of the `demo-apps` App-of-Apps.
+
+**Production Endpoint**: http://chatbot.corp.vmbeans.com
 
 ```bash
-# Deploy with kubectl
-kubectl apply -k kubernetes/
+# Check deployment status
+argocd app get chatbot
 
-# Or use ArgoCD
-argocd app create chatbot --repo https://github.com/tmm-demo-apps/chatbot-app --path kubernetes
+# Manual sync if needed
+argocd app sync chatbot
+
+# Or deploy manually with kubectl
+kubectl apply -k kubernetes/
 ```
+
+### Ollama Status
+
+Ollama is currently **disabled** in Kubernetes (`replicas: 0` in `ollama.yaml`) because:
+- The Ollama Docker image is 3.3GB
+- VKS nodes have ~19GB ephemeral storage, leaving only ~2-3GB available
+- Image pulls fail with "no space left on device"
+
+**Workaround**: Deploy Ollama on a dedicated VM and update `LLM_API_URL` in the ConfigMap to point to the external Ollama instance.
 
 ## Response Strategy
 
@@ -141,5 +159,11 @@ argocd app create chatbot --repo https://github.com/tmm-demo-apps/chatbot-app --
 
 ## Related Projects
 
-- [bookstore-app](https://github.com/tmm-demo-apps/bookstore-app) - E-commerce bookstore
-- [reader-app](https://github.com/tmm-demo-apps/reader-app) - EPUB reader
+| App | Description | Endpoint |
+|-----|-------------|----------|
+| [bookstore-app](https://github.com/tmm-demo-apps/bookstore-app) | E-commerce bookstore | http://bookstore.corp.vmbeans.com |
+| [reader-app](https://github.com/tmm-demo-apps/reader-app) | EPUB library reader | http://reader.corp.vmbeans.com |
+
+---
+
+**Last Updated**: January 30, 2026
