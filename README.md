@@ -3,10 +3,18 @@
 [![CI](https://github.com/tmm-demo-apps/chatbot-app/workflows/CI/badge.svg)](https://github.com/tmm-demo-apps/chatbot-app/actions)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python)](https://python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![GHCR](https://img.shields.io/badge/GHCR-public-blue?logo=github)](https://github.com/orgs/tmm-demo-apps/packages)
 
 AI-powered customer support chatbot for the Bookstore. Part of the VCF multi-app demo suite.
 
-**Live Endpoint**: http://chatbot.corp.vmbeans.com
+**Endpoint**: `http://chatbot.<your-domain>` (set via Helm's `global.domain`)
+
+> **Portable Deployment**: This app is included in the [bookstore-app Helm chart](https://github.com/tmm-demo-apps/bookstore-app/tree/main/helm/demo-suite). Deploy the entire suite with:
+> ```bash
+> git clone https://github.com/tmm-demo-apps/bookstore-app.git && cd bookstore-app
+> helm install demo ./helm/demo-suite --set global.domain=<your-domain>
+> ```
+> This deploys bookstore + reader + chatbot. To skip chatbot: add `--set chatbot.enabled=false`.
 
 > **Note**: Ollama is currently disabled in K8s (the 3.3GB image exceeds VKS node ephemeral storage). The chatbot works with canned responses. LLM functionality will be enabled via dedicated Ollama VM.
 
@@ -118,9 +126,23 @@ curl http://localhost:5000/ready
 
 ## Kubernetes Deployment
 
+### Helm (Recommended for New Environments)
+
+The Chatbot is deployed as part of the [demo-suite Helm chart](https://github.com/tmm-demo-apps/bookstore-app/tree/main/helm/demo-suite):
+
+```bash
+# Deploy full suite (includes chatbot)
+helm install demo ./helm/demo-suite --set global.domain=apps.your-env.com
+
+# Deploy without chatbot
+helm install demo ./helm/demo-suite --set chatbot.enabled=false
+```
+
+### ArgoCD (Existing VCF Environment)
+
 The Chatbot app is deployed to VKS-04 via ArgoCD as part of the `demo-apps` App-of-Apps.
 
-**Production Endpoint**: http://chatbot.corp.vmbeans.com
+**VCF Production Endpoint**: http://chatbot.corp.vmbeans.com
 
 ```bash
 # Check deployment status
@@ -161,9 +183,9 @@ Ollama is currently **disabled** in Kubernetes (`replicas: 0` in `ollama.yaml`) 
 
 | App | Description | Endpoint |
 |-----|-------------|----------|
-| [bookstore-app](https://github.com/tmm-demo-apps/bookstore-app) | E-commerce bookstore | http://bookstore.corp.vmbeans.com |
-| [reader-app](https://github.com/tmm-demo-apps/reader-app) | EPUB library reader | http://reader.corp.vmbeans.com |
+| [bookstore-app](https://github.com/tmm-demo-apps/bookstore-app) | E-commerce bookstore | `bookstore.<your-domain>` |
+| [reader-app](https://github.com/tmm-demo-apps/reader-app) | EPUB library reader | `reader.<your-domain>` |
 
 ---
 
-**Last Updated**: January 30, 2026
+**Last Updated**: February 19, 2026
