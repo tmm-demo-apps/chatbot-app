@@ -54,6 +54,9 @@ jobs:
     name: Build and Push
     runs-on: [self-hosted, linux, harbor]
     needs: test
+    permissions:
+      contents: write
+      packages: write
     
     steps:
       - uses: actions/checkout@v4
