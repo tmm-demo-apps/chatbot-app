@@ -12,9 +12,11 @@ AI-powered customer support chatbot for the Bookstore. Part of the VCF multi-app
 > **Portable Deployment**: This app is included in the [bookstore-app Helm chart](https://github.com/tmm-demo-apps/bookstore-app/tree/main/helm/demo-suite). Deploy the entire suite with:
 > ```bash
 > git clone https://github.com/tmm-demo-apps/bookstore-app.git && cd bookstore-app
+> helm dependency update ./helm/demo-suite
 > helm install demo ./helm/demo-suite --set global.domain=<your-domain>
 > ```
 > This deploys bookstore + reader + chatbot. To skip chatbot: add `--set chatbot.enabled=false`.
+> No ingress controller? Add `--set ingress-nginx.enabled=true` to install one automatically.
 
 > **Note**: Ollama is currently disabled in K8s (the 3.3GB image exceeds VKS node ephemeral storage). The chatbot works with canned responses. LLM functionality will be enabled via dedicated Ollama VM.
 
