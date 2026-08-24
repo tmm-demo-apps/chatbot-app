@@ -4,7 +4,7 @@ metadata:
   name: chatbot-ingress
 spec:
   rules:
-  - host: chatbot.corp.vmbeans.com
+  - host: chatbot.apps.lab
     http:
       paths:
       - path: /

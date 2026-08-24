@@ -22,7 +22,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: chatbot
-        image: harbor.corp.vmbeans.com/bookstore/chatbot:latest
+        image: harbor-01a.vcf.lab/bookstore/chatbot:latest
         ports:
         - containerPort: 5000
         securityContext:
