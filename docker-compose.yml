@@ -10,13 +10,13 @@ services:
       - LLM_API_URL=http://ollama:11434
       - LLM_MODEL=smollm2:360m
       # - LLM_API_KEY=           # Uncomment for VCF Private AI
-      # - LLM_TIMEOUT=30         # Optional override (uses model config if not set)
+      - LLM_TIMEOUT=120        # Optional override (uses model config if not set)
       - BOOKSTORE_API_URL=http://host.docker.internal:8080
     depends_on:
       - ollama
 
   ollama:
-    image: ollama/ollama:latest
+    image: ghcr.io/tmm-demo-apps/ollama:latest
     ports:
       - "11434:11434"
     volumes:
