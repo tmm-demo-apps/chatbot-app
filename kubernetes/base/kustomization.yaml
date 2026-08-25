@@ -12,4 +12,4 @@ resources:
 images:
   - name: chatbot
     newName: harbor-01a.vcf.lab/bookstore/chatbot
-    newTag: v20260219-502d206
+    newTag: v20260825-517315a
